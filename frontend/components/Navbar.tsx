@@ -17,7 +17,7 @@ export default function Navbar() {
       <div className="container nav-inner">
         <Link href="/" className="brand">
           <span className="brand-badge" />
-          <span>Portfolio Pro</span>
+          <span>Portfolio</span>
         </Link>
         <nav className="nav-links">
           {links.map(([href, label]) => (

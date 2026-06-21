@@ -3,6 +3,8 @@ from pathlib import Path
 from uuid import uuid4
 import shutil
 
+from app.core.config import BACKEND_URL
+
 router = APIRouter(
     prefix="/upload",
     tags=["Upload"]
@@ -29,7 +31,6 @@ DOCUMENTS_DIR.mkdir(parents=True, exist_ok=True)
 def save_file(
     upload_dir: Path,
     file: UploadFile,
-    request: Request
 ):
     if not file.filename:
         raise HTTPException(
@@ -46,11 +47,9 @@ def save_file(
     with open(filepath, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    base_url = str(request.base_url).rstrip("/")
-
     return {
         "filename": filename,
-        "url": f"{base_url}/uploads/{upload_dir.name}/{filename}"
+        "url": f"{BACKEND_URL}/uploads/{upload_dir.name}/{filename}"
     }
 
 # ==========================================
@@ -59,7 +58,6 @@ def save_file(
 
 @router.post("/image")
 async def upload_image(
-    request: Request,
     file: UploadFile = File(...)
 ):
     if not file.content_type:
@@ -76,8 +74,7 @@ async def upload_image(
 
     return save_file(
         IMAGES_DIR,
-        file,
-        request
+        file
     )
 
 # ==========================================
@@ -86,7 +83,6 @@ async def upload_image(
 
 @router.post("/video")
 async def upload_video(
-    request: Request,
     file: UploadFile = File(...)
 ):
     if not file.content_type:
@@ -103,8 +99,7 @@ async def upload_video(
 
     return save_file(
         VIDEOS_DIR,
-        file,
-        request
+        file
     )
 
 # ==========================================
@@ -113,7 +108,6 @@ async def upload_video(
 
 @router.post("/document")
 async def upload_document(
-    request: Request,
     file: UploadFile = File(...)
 ):
     allowed_types = {
@@ -136,6 +130,5 @@ async def upload_document(
 
     return save_file(
         DOCUMENTS_DIR,
-        file,
-        request
+        file
     )
